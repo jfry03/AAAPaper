@@ -43,6 +43,7 @@ class Data:
                     if image_num not in images or not image.endswith(ending):
                         continue
                     if ending == '.npz':
+                    
                         d = np.load(os.path.join(fold_path, image))['probabilities'][1, :, :, :]
                         data[image_num][model] = np.transpose(d, (2, 1, 0))
                     elif ending == '.nrrd':

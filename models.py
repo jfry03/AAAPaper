@@ -6,6 +6,8 @@ import methods
 import os
 from scipy.ndimage import binary_erosion
 from scipy.spatial import cKDTree
+from scipy.ndimage import label, generate_binary_structure
+from sklearn.svm import SVC
 
 
 
@@ -30,7 +32,7 @@ class Model:
         
         return np.array(X).T, np.array(y)
     
-    def predict(self, test_images):
+    def predict(self, test_images, remove_islands=True):
         X, _ = self.build_feature_vector(test_images)
         predictions = self.model.predict(X)
 
@@ -41,11 +43,65 @@ class Model:
         for image in test_images:
             if image in self.segmentation_data:
                 original_shape = self.segmentation_data[image][self.models[0]].shape
+                print(original_shape)
                 num_pixels = np.prod(original_shape)
                 image_predictions = predictions[pixel_idx:pixel_idx + num_pixels]
-                result_dict[image] = image_predictions.reshape(original_shape)
+                new_img = image_predictions.reshape(original_shape)
+                if remove_islands:
+                    new_img = self.keep_largest_component(new_img)
+                result_dict[image] = new_img
                 pixel_idx += num_pixels
+            
+
         return result_dict
+    
+        
+    @staticmethod
+    def keep_largest_component(arr, full_connectivity=False, return_mask=False):
+        """
+        Keep only the largest connected component of a binary array.
+        
+        Parameters
+        ----------
+        arr : np.ndarray
+            Input array. Nonzero values are treated as foreground.
+        full_connectivity : bool
+            If False: 4-connectivity (2D) / 6-connectivity (3D).
+            If True : 8-connectivity (2D) / 26-connectivity (3D).
+        return_mask : bool
+            If True, return a boolean mask. If False, return array with only largest
+            component kept (same dtype as input, others set to 0).
+        """
+        # Ensure boolean foreground
+        fg = (arr != 0)
+
+        if arr.ndim < 1:
+            raise ValueError("Array must be at least 1D.")
+        if arr.ndim > 3:
+            # Works for ND, but typical use is 2D/3D
+            pass
+
+        # Connectivity structure (order=1 = minimal, order=arr.ndim = full)
+        order = arr.ndim if full_connectivity else 1
+        structure = generate_binary_structure(arr.ndim, order)
+
+        labeled, n = label(fg, structure=structure)
+        if n == 0:
+            # No foreground
+            return np.zeros_like(fg if return_mask else arr)
+
+        # Count pixels in each component; ignore background (label 0)
+        counts = np.bincount(labeled.ravel())
+        counts[0] = 0
+        largest_label = counts.argmax()
+
+        mask = (labeled == largest_label)
+        if return_mask:
+            return mask
+        out = np.zeros_like(arr)
+        out[mask] = arr[mask]
+        return out
+
 
 class LogisticRegressor(Model):
     def __init__(self,segmentation_data, groundtruths, models):
@@ -57,6 +113,18 @@ class LogisticRegressor(Model):
 
         self.model = LogisticRegression(**model_params)
         self.model.fit(X, y)
+        return self.model
+
+class SVMClassifier(Model):
+    def __init__(self,segmentation_data, groundtruths, models):
+        super().__init__(segmentation_data, groundtruths, models)
+    
+    def train_model(self, training_images, model_params = {}):
+        X, y = self.build_feature_vector(training_images)
+
+        self.model = SVC(**model_params)
+        self.model.fit(X, y)
+
         return self.model
 
 class LinearCombo(Model):
@@ -134,7 +202,7 @@ class Analytics:
         
         return maximums
     
-    def separation_distances(self):
+    def separation_distances(self, return_pts = False):
         separation_distances = {}
         for img, pred in self.predictions.items():
             gt = self.gts[img]
@@ -148,7 +216,10 @@ class Analytics:
             pred_tree = cKDTree(pred_pts_phys)
             d_gt_to_pred, _ = pred_tree.query(gt_pts_phys)
 
-            separation_distances[img] = list(zip(gt_pts_phys, d_gt_to_pred))
+            if return_pts:
+                separation_distances[img] = list(zip(gt_pts_phys, d_gt_to_pred))
+            else:
+                separation_distances[img] = np.mean(d_gt_to_pred)
 
         return separation_distances
 
