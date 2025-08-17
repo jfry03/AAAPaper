@@ -43,7 +43,6 @@ class Model:
         for image in test_images:
             if image in self.segmentation_data:
                 original_shape = self.segmentation_data[image][self.models[0]].shape
-                print(original_shape)
                 num_pixels = np.prod(original_shape)
                 image_predictions = predictions[pixel_idx:pixel_idx + num_pixels]
                 new_img = image_predictions.reshape(original_shape)
