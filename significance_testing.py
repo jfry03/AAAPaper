@@ -75,6 +75,7 @@ p_values = {}
 for image in testing_images:
     image_vals = {}
     for model in models:
+        print(image, model)
         ensemble_seg = logreg_predictions[image]
         gt = binary_data.gts[image]
         established_seg = model_segs[model][image]
