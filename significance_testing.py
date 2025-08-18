@@ -78,6 +78,6 @@ for image in testing_images:
         ensemble_seg = logreg_predictions[image]
         gt = binary_data.gts[image]
         established_seg = model_segs[model][image]
-        p_val = bootstrap_segmentation(gt, established_seg, ensemble_seg, 10, 50, 10000, 10, f"{image}{model}")
+        p_val = bootstrap_segmentation(gt, established_seg, ensemble_seg, 7,150, 10000, 50, f"{image}{model}", interval = 20)
         image_vals[model] = p_val
     p_values[image] = image_vals

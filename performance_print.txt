@@ -1,0 +1,89 @@
+Dice Coefficients by Training Image and Model:
+============================================================
+
+BasicPlans:
+  Image 033: 0.5285
+  Image 034: 0.4945
+  Image 035: 0.6663
+  Image 036: 0.4583
+  Image 037: 0.5060
+  Image 038: 0.2947
+  Image 039: 0.4546
+  Image 040: 0.3193
+
+DA5_Segmentations:
+  Image 033: 0.4957
+  Image 034: 0.5217
+  Image 035: 0.6963
+  Image 036: 0.5444
+  Image 037: 0.5021
+  Image 038: 0.2890
+  Image 039: 0.4296
+  Image 040: 0.3319
+
+LargeEncoder:
+  Image 033: 0.5532
+  Image 034: 0.4940
+  Image 035: 0.5916
+  Image 036: 0.4820
+  Image 037: 0.4862
+  Image 038: 0.3169
+  Image 039: 0.4919
+  Image 040: 0.3497
+
+Ensemble:
+  Image 033: 0.5119
+  Image 034: 0.4902
+  Image 035: 0.6268
+  Image 036: 0.4777
+  Image 037: 0.4982
+  Image 038: 0.2933
+  Image 039: 0.4505
+  Image 040: 0.3302
+
+Detailed Training Results:
+            Model Image     Dice
+       BasicPlans   033 0.528453
+       BasicPlans   034 0.494512
+       BasicPlans   035 0.666250
+       BasicPlans   036 0.458261
+       BasicPlans   037 0.506022
+       BasicPlans   038 0.294727
+       BasicPlans   039 0.454560
+       BasicPlans   040 0.319286
+DA5_Segmentations   033 0.495651
+DA5_Segmentations   034 0.521656
+DA5_Segmentations   035 0.696348
+DA5_Segmentations   036 0.544440
+DA5_Segmentations   037 0.502055
+DA5_Segmentations   038 0.288971
+DA5_Segmentations   039 0.429557
+DA5_Segmentations   040 0.331933
+     LargeEncoder   033 0.553203
+     LargeEncoder   034 0.494021
+     LargeEncoder   035 0.591558
+     LargeEncoder   036 0.481953
+     LargeEncoder   037 0.486186
+     LargeEncoder   038 0.316943
+     LargeEncoder   039 0.491941
+     LargeEncoder   040 0.349664
+         Ensemble   033 0.511858
+         Ensemble   034 0.490157
+         Ensemble   035 0.626765
+         Ensemble   036 0.477663
+         Ensemble   037 0.498178
+         Ensemble   038 0.293279
+         Ensemble   039 0.450476
+         Ensemble   040 0.330161
+
+Pivot Table (Training Images vs Models):
+Model  BasicPlans  DA5_Segmentations  Ensemble  LargeEncoder
+Image                                                       
+033      0.528453           0.495651  0.511858      0.553203
+034      0.494512           0.521656  0.490157      0.494021
+035      0.666250           0.696348  0.626765      0.591558
+036      0.458261           0.544440  0.477663      0.481953
+037      0.506022           0.502055  0.498178      0.486186
+038      0.294727           0.288971  0.293279      0.316943
+039      0.454560           0.429557  0.450476      0.491941
+040      0.319286           0.331933  0.330161      0.349664
